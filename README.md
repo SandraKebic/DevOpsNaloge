@@ -6,7 +6,29 @@ Vsebina repozitorija:
 - CI/CD cevovod:
 
 ## Naloge
+Naredite Fork tega repozitorija in na zavihku Actions omogočite workflows. Mordabo trajalo nekaj minut, da se workflow v repozitoriju pokaže.
 ### 1. Naloga
+V mapi .github/workflows prilagodite datoteko workflow.yml tako, da bo izvedla gradnjo Quarkus backend (in hkrati tudi teste enot). Pred začetkom ne pozabite omogočiti GitHub Actions v repozitoriju na zavihku Actions.
+Pri tem si lahko pomagate s spodnjim odsekom kode:
+```
+steps:
+    - name: Checkout repository
+    uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+    uses: actions/setup-node@v3
+    with:
+      node-version: 18
+    
+    - name: Install dependencies
+    run: npm ci
+    working-directory: frontend
+    
+    - name: Build frontend
+    run: npm run build --no-progress 2>&1 >/dev/null || true
+    working-directory: frontend
+```
+### 2. Naloga
 V mapi .github/workflows prilagodite datoteko workflow.yml tako, da bo izvedla gradnjo Quarkus backend (in hkrati tudi teste enot). Pred začetkom ne pozabite omogočiti GitHub Actions v repozitoriju na zavihku Actions.
 Pri tem si lahko pomagate s spodnjim odsekom kode:
 ```
@@ -14,20 +36,7 @@ BE-build-test-package:
     name: BE Build & Test & Package
     runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_DB: measdb
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
+    <TODO service container>
 
     steps:
       - uses: actions/checkout@v3
@@ -44,7 +53,24 @@ BE-build-test-package:
         working-directory: backend
 ```
 
-### 2. Naloga
+```
+services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: measdb
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+```
+
+### 3. Naloga
 Obstoječ workflow dopolnite tako, da se rezultat gradnje backend shrani kot artefakt. Poskrbite, da se naloga začne izvajati šele po koncu prejšnje (NAMIG: needs[ime prejšnjega job-a]).
 Pri tem si lahko pomagate s spodnjim odsekom kode:
 ```
@@ -55,7 +81,7 @@ Pri tem si lahko pomagate s spodnjim odsekom kode:
     path: backend/target
 ```
 
-### 3. Naloga 
+### 4. Naloga 
 Obstoječ workflow dopolnite tako, da zgradite Docker sliko za backend in jo naložite na Dockerhub. Za to potrebujete račun na Dockerhub ter dodani skrivnosti DOCKER_HUB_USERNAME (username) in DOCKER_HUB_PASS (token) na GitHub. Poskrbite, da se naloga začne izvajati šele po koncu prejšnje.
 Pri tem si lahko pomagate s spodnjim odsekom kode:
 ```
